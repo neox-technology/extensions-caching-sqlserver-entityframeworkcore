@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Authors>Neox</Authors>
+		<Description>Provides Entity Framework Core model extensions to map the SQL Server distributed cache table used by Microsoft.Extensions.Caching.SqlServer.</Description>
+		<PackageTags>caching;sqlserver;entityframeworkcore;efcore;distributed-cache</PackageTags>
+		<PackageProjectUrl>https://github.com/neox-fr/extensions-caching-sqlserver-entityframeworkcore</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/neox-fr/extensions-caching-sqlserver-entityframeworkcore.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+</Project>

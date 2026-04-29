@@ -1,0 +1,53 @@
+name: Publish NuGet
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "NuGet package version (ex: 1.2.3)"
+        required: true
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore src/Neox.Extensions.Caching.SqlServer.EntityFrameworkCore/Neox.Extensions.Caching.SqlServer.EntityFrameworkCore.csproj
+
+      - name: Build
+        run: dotnet build src/Neox.Extensions.Caching.SqlServer.EntityFrameworkCore/Neox.Extensions.Caching.SqlServer.EntityFrameworkCore.csproj --configuration Release --no-restore
+
+      - name: Resolve package version from tag or input
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          if [[ -z "$VERSION" ]]; then
+            echo "Package version is empty."
+            exit 1
+          fi
+          echo "PACKAGE_VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Using package version: $VERSION"
+
+      - name: Pack
+        run: dotnet pack src/Neox.Extensions.Caching.SqlServer.EntityFrameworkCore/Neox.Extensions.Caching.SqlServer.EntityFrameworkCore.csproj --configuration Release --no-build --output ./artifacts -p:PackageVersion=${{ env.PACKAGE_VERSION }}
+
+      - name: Push to NuGet.org
+        run: dotnet nuget push "./artifacts/*.nupkg" --source "https://api.nuget.org/v3/index.json" --api-key "${{ secrets.NUGET_API_KEY }}" --skip-duplicate
